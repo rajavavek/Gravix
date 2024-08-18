@@ -1,0 +1,32 @@
+Preprocessing: The steps followed for the preprocessing.
+
+- waves = np.hstack(raw_signals)
+- waves = waves / np.max(waves)
+- waves = torch.from_numpy(waves).float()
+- transform=CQT1992v2(sr=2048, fmin=20,
+fmax=1024, hop_length=64, verbose = False)
+- image = transform(waves)
+- image = np.array(image)
+- image = np.transpose(image,(1,2,0))
+
+Base model: It consists on a basic one-dimensional
+CNN with one dense layer with 256 neurons, and the rectified linear unit (ReLU) activation function. Its input
+shape matches with the dimensions of the Q-transformed
+signal. Additionally, it has one dense layer with the same
+number of neurons and ReLU, and the output layer, with
+sigmoid activation function.
+The compilation is done with Adam optimizer with learning rate 0.0002.
+- from keras.models import Sequential
+- from keras.layers import Dense, Dropout,
+Flatten, Conv1D, MaxPool1D, BatchNormalization
+- from keras.optimizers import RMSprop,Adam
+- from nnAudio.Spectrogram import CQT1992v2
+- model = Sequential()
+- model.add(Conv1D(256, input_shape=(69, 195,),
+kernel_size=3, activation=’relu’))
+- model.add(BatchNormalization())
+- model.add(Flatten())
+- model.add(Dense(256, activation=’relu’))
+- model.add(Dense(1, activation=’sigmoid’))
+- model.compile(optimizer = Adam(lr=2e-4),
+loss=’binary_crossentropy’,metrics=[’acc’])
